@@ -14,9 +14,17 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    QObject *object;
+    QObject *map;
+    QString mapType;
 
 private slots:
 
+    void on_setPosition_clicked();
+
+    void distanceMsgBox(const int &distance);
+
+    void Map();
 private:
     Ui::MainWindow *ui;
 };

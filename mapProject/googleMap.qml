@@ -4,7 +4,7 @@ import QtQuick.Controls 1.4
 import QtLocation 5.9
 import QtPositioning 5.9
 
-Item{
+Item {
     objectName: "root"
     property var point1: QtPositioning.coordinate();
     property var point2: QtPositioning.coordinate();
@@ -16,46 +16,33 @@ Item{
         Tab{
             objectName: "firstTab"
             anchors.fill:parent
-            title: "OS maps"    
+            title: "Google maps"
                 Rectangle {
                     visible: true
-                    id: mapRectangleID
+                    id: mapRectangleID2
                     objectName: "mapRect"
                     width: 1024
                     height: 800
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     ListModel {
-                        id: markerModel
+                        id: markerModel2
                         dynamicRoles: true
                     }
                     ListModel {
-                        id: pointModel
+                        id: pointModel2
                         dynamicRoles: true
                     }
                     Map {
-                        id: map_id
-                        objectName: "map"
+                        id: map
+                        objectName: "googleMap"
                         anchors.fill: parent
-                        plugin: Plugin { name: "osm" }
+                        plugin: Plugin { name: "googlemaps" }
                         center: QtPositioning.coordinate(35.6892,51.3890)
                         zoomLevel: 15
-                        PluginParameter {
-                            name: "osm.mapping.providersrepository.disabled"
-                            value: "true"
-                        }
-                        PluginParameter {
-                            name: "osm.mapping.providersrepository.address"
-                            value: "http://maps-redirect.qt.io/osm/5.8"
-                        }
-                        RouteModel {
-                            id: routeBetweenPoints
-                            plugin: Plugin { name: "osm" }
-                            query: RouteQuery {id: routeQuery }
-                        }
                         MapItemView {
-                            model: markerModel
-                            id: point
+                            model: markerModel2
+                            id: googlePoint
                             delegate: Component {
                                 MapQuickItem {
                                     coordinate: model.position
@@ -67,9 +54,14 @@ Item{
                                 }
                             }
                         }
+                        RouteModel {
+                            id: googleRouteBetweenPoints
+                            plugin: Plugin { name: "osm" }
+                            query: RouteQuery {id: googleRouteQuery }
+                        }
                         MapItemView {
-                            model: pointModel
-                            id: pointer
+                            model: pointModel2
+                            id: mapPointer
                             delegate: Component {
                                 MapQuickItem {
                                     coordinate: model.position
@@ -82,8 +74,8 @@ Item{
                              }
                         }
                         MapItemView {
-                            model: routeBetweenPoints
-                            id: route
+                            model: googleRouteBetweenPoints
+                            id: googleRoute
                             delegate: Component {
                                 MapRoute {
                                     route: routeData
@@ -96,42 +88,41 @@ Item{
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                if (markerModel.count < 2){
-                                    var coordinate = map_id.toCoordinate(Qt.point(mouseX, mouseY))
+                                if (markerModel2.count < 2){
+                                    var coordinate = map.toCoordinate(Qt.point(mouseX, mouseY))
                                     point1 = coordinate
-                                    markerModel.append({"position": coordinate})
-                                    routeQuery.addWaypoint(point1)
-                                    //routeQuery.addWaypoint(point2)
-                                    routeBetweenPoints.update()
-                                    route.update()
-                                    point.update()
-                                    if(markerModel.count == 2){
-                                        distance = markerModel.get(0).position.distanceTo(markerModel.get(1).position)
-                                        map_id.distanceSignal(distance)
+                                    markerModel2.append({"position": coordinate})
+                                    googleRouteQuery.addWaypoint(point1)
+                                    googleRouteBetweenPoints.update()
+                                    googleRoute.update()
+                                    googlePoint.update()
+                                    if(markerModel2.count == 2){
+                                        distance = markerModel2.get(0).position.distanceTo(markerModel2.get(1).position)
+                                        map.distanceSignal(distance)
+                                        console.log(distance)
                                     }
                                 }
                             }
                             onPressAndHold: {
-                                markerModel.clear()
-                                routeQuery.clearWaypoints()
-                                var coordinate = map_id.toCoordinate(Qt.point(mouseX, mouseY))
-                                markerModel.append({"position": coordinate})
+                                markerModel2.clear()
+                                googleRouteQuery.clearWaypoints()
+                                var coordinate = map.toCoordinate(Qt.point(mouseX, mouseY))
+                                markerModel2.append({"position": coordinate})
                                 point1 = coordinate
-                                routeQuery.addWaypoint(point1)
-                                routeBetweenPoints.update()
-                                route.update()
-                                point.update()
+                                googleRouteQuery.addWaypoint(point1)
+                                googleRouteBetweenPoints.update()
+                                googleRoute.update()
+                                googlePoint.update()
                             }
                         }
-
                         function append(newElement) {
-                            pointModel.append({"position": QtPositioning.coordinate(newElement.lat, newElement.lon)})
-                            pointNumber = pointModel.count - 1
+                            pointModel2.append({"position": QtPositioning.coordinate(newElement.lat, newElement.lon)})
+                            pointNumber = pointModel2.count - 1
                             console.log(pointNumber)
                         }
                         signal distanceSignal(distance: int)
                         Button{
-                            id: lastPoint
+                            id: googleLastPoint
                             anchors {
                                 right: parent.right
                                 top: parent.verticalCenter
@@ -139,14 +130,14 @@ Item{
                             }
                             iconSource: "./center.png"
                             onClicked: {
-                                if(pointModel.count > 0){
-                                    map_id.center = pointModel.get(pointNumber).position
-                                    map_id.zoomLevel = 18
+                                if(pointModel2.count > 0){
+                                    map.center = pointModel2.get(pointNumber).position
+                                    map.zoomLevel = 18
                                 }
                             }
                         }
                         Slider{
-                            id: zoomSlider
+                            id: googleZoomSlider
                             anchors {
                                 left: parent.left
                                 leftMargin: 20
@@ -154,17 +145,17 @@ Item{
                                 bottomMargin: 0
                             }
                             height: parent.height - 50
-                            value: map_id.zoomLevel
+                            value: map.zoomLevel
                             maximumValue: 22.0
                             stepSize: 0.1
                             minimumValue: 8.0
                             orientation: Qt.Vertical
                             onPressedChanged: {
-                                map_id.zoomLevel = zoomSlider.value
+                                map.zoomLevel = googleZoomSlider.value
                             }
                         }
                     }
                 }
             }
-        }
+    }
 }

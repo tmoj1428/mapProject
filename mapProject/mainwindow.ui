@@ -14,7 +14,24 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout"/>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QLineEdit" name="lat"/>
+    </item>
+    <item row="3" column="0">
+     <layout class="QVBoxLayout" name="mapLayout"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="setPosition">
+      <property name="text">
+       <string>set pointer</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLineEdit" name="lon"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -1,44 +1,64 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QtQuick/QQuickView>
+#include <QtQuick>
 #include <QQmlContext>
 #include <QGeoRoute>
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQmlProperty>
-#include <QAbstractListModel>
+#include <QMessageBox>
+#include "choosemap.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-
-    QQmlEngine engine;
-    QQmlComponent component(&engine, QUrl("../mapProject/OSmap.qml"));
-    QObject *object = component.create();
+    Map();
     QQuickView *view = new QQuickView();
     QWidget *container = QWidget::createWindowContainer(view, this);
     container->setMinimumSize(800, 800);
     container->setFocusPolicy(Qt::TabFocus);
     view->setResizeMode(QQuickView::SizeRootObjectToView);
-    view->setSource(QUrl("../mapProject/OSmap.qml"));
-    ui->gridLayout->addWidget(container);
-
-    QQmlProperty::write(object, "latitude", 35.6792);
-    //qDebug() << "Property value:" << ;
-    object->setProperty("longitude", 51.3990);
-    QObject *mapRectangleID = object->findChild<QObject*>("mapRect");
-    QAbstractListModel *pointList;
-    if(mapRectangleID){
-        qDebug() << "I am here";
+    if(mapType == "OSM"){
+        view->setSource(QUrl("../mapProject/OSmap.qml"));
+        object = view->rootObject();
+        map = object->findChild<QObject*>("map");
     }else{
-        qDebug() << "I am not here";
+        view->setSource(QUrl("../mapProject/googleMap.qml"));
+        object = view->rootObject();
+        map = object->findChild<QObject*>("googleMap");
     }
-    //qDebug() << "Property value:" << object->property("longitude");
+    QObject::connect(map, SIGNAL(distanceSignal(int)), this, SLOT(distanceMsgBox(int)));
+    ui->gridLayout->addWidget(container);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::Map()
+{
+    chooseMap chooseMapWindow(this);
+    chooseMapWindow.exec();
+    mapType = chooseMapWindow.mapType;
+}
+
+void MainWindow::on_setPosition_clicked()
+{
+    QVariantMap newElement;
+    double lat = ui->lat->text().toDouble();
+    double lon = ui->lon->text().toDouble();
+    newElement.insert("lat", lat);
+    newElement.insert("lon", lon);
+    QMetaObject::invokeMethod(map, "append", Q_ARG(QVariant, QVariant::fromValue(newElement)));
+}
+
+
+void MainWindow::distanceMsgBox(const int &distance){
+    QMessageBox msgBox;
+    msgBox.setText("The distance is about:");
+    msgBox.setInformativeText(QString::number(distance) + " meters");
+    msgBox.exec();
 }
