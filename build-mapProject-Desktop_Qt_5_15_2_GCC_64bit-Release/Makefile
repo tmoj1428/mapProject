@@ -61,7 +61,12 @@ OBJECTS       = choosemap.o \
 		mainwindow.o \
 		moc_choosemap.o \
 		moc_mainwindow.o
-DIST          = ../mapProject/OSmap.qml \
+DIST          = ../mapProject/CenterButton.qml \
+		../mapProject/MarkerModel.qml \
+		../mapProject/OSmap.qml \
+		../mapProject/PointerModel.qml \
+		../mapProject/RoutingModel.qml \
+		../mapProject/ZoomSlider.qml \
 		../mapProject/googleMap.qml \
 		../../../../Qt/5.15.2/gcc_64/mkspecs/features/spec_pre.prf \
 		../../../../Qt/5.15.2/gcc_64/mkspecs/common/unix.conf \
@@ -1019,7 +1024,29 @@ choosemap.o: ../mapProject/choosemap.cpp ../mapProject/choosemap.h \
 		../../../../Qt/5.15.2/gcc_64/include/QtCore/qfiledevice.h \
 		../../../../Qt/5.15.2/gcc_64/include/QtGui/qvector2d.h \
 		../../../../Qt/5.15.2/gcc_64/include/QtGui/qtouchdevice.h \
-		ui_choosemap.h
+		ui_choosemap.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtCore/QVariant \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/QApplication \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qapplication.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtCore/qcoreapplication.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtCore/qeventloop.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdesktopwidget.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtGui/qguiapplication.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtGui/qinputmethod.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/QDialogButtonBox \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qdialogbuttonbox.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/QLabel \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlabel.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qframe.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/QRadioButton \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qradiobutton.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qabstractbutton.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtGui/qicon.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/QVBoxLayout \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qboxlayout.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayout.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qlayoutitem.h \
+		../../../../Qt/5.15.2/gcc_64/include/QtWidgets/qgridlayout.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o choosemap.o ../mapProject/choosemap.cpp
 
 main.o: ../mapProject/main.cpp ../mapProject/mainwindow.h \

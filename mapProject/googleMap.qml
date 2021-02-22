@@ -26,133 +26,70 @@ Item {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
                     ListModel {
-                        id: markerModel2
+                        id: markerModel
                         dynamicRoles: true
                     }
                     ListModel {
-                        id: pointModel2
+                        id: pointModel
                         dynamicRoles: true
                     }
                     Map {
-                        id: map
-                        objectName: "googleMap"
+                        id: map_id
+                        objectName: "map"
                         anchors.fill: parent
                         plugin: Plugin { name: "googlemaps" }
                         center: QtPositioning.coordinate(35.6892,51.3890)
                         zoomLevel: 15
-                        MapItemView {
-                            model: markerModel2
-                            id: googlePoint
-                            delegate: Component {
-                                MapQuickItem {
-                                    coordinate: model.position
-                                    sourceItem: Image {
-                                        width: 50
-                                        height: 50
-                                        source: "./marker2.png"
-                                    }
-                                }
-                            }
-                        }
                         RouteModel {
-                            id: googleRouteBetweenPoints
+                            id: routeBetweenPoints
                             plugin: Plugin { name: "osm" }
                             query: RouteQuery {id: googleRouteQuery }
                         }
-                        MapItemView {
-                            model: pointModel2
-                            id: mapPointer
-                            delegate: Component {
-                                MapQuickItem {
-                                    coordinate: model.position
-                                    sourceItem: Image {
-                                        width: 50
-                                        height: 50
-                                        source: "./marker2.png"
-                                    }
-                                }
-                             }
+                        PointerModel{
+                            model: markerModel
                         }
-                        MapItemView {
-                            model: googleRouteBetweenPoints
-                            id: googleRoute
-                            delegate: Component {
-                                MapRoute {
-                                    route: routeData
-                                    line.color: "red"
-                                    line.width: 10
-                                }
-                            }
+                        MarkerModel{
+                            model: pointModel
                         }
-
+                        RoutingModel{
+                            model: routeBetweenPoints
+                        }
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                if (markerModel2.count < 2){
-                                    var coordinate = map.toCoordinate(Qt.point(mouseX, mouseY))
+                                if (markerModel.count < 2){
+                                    var coordinate = map_id.toCoordinate(Qt.point(mouseX, mouseY))
                                     point1 = coordinate
-                                    markerModel2.append({"position": coordinate})
+                                    markerModel.append({"position": coordinate})
                                     googleRouteQuery.addWaypoint(point1)
-                                    googleRouteBetweenPoints.update()
-                                    googleRoute.update()
-                                    googlePoint.update()
-                                    if(markerModel2.count == 2){
-                                        distance = markerModel2.get(0).position.distanceTo(markerModel2.get(1).position)
-                                        map.distanceSignal(distance)
+                                    routeBetweenPoints.update()
+                                    if(markerModel.count == 2){
+                                        distance = markerModel.get(0).position.distanceTo(markerModel.get(1).position)
+                                        map_id.distanceSignal(distance)
                                         console.log(distance)
                                     }
                                 }
                             }
                             onPressAndHold: {
-                                markerModel2.clear()
+                                markerModel.clear()
                                 googleRouteQuery.clearWaypoints()
-                                var coordinate = map.toCoordinate(Qt.point(mouseX, mouseY))
-                                markerModel2.append({"position": coordinate})
+                                var coordinate = map_id.toCoordinate(Qt.point(mouseX, mouseY))
+                                markerModel.append({"position": coordinate})
                                 point1 = coordinate
                                 googleRouteQuery.addWaypoint(point1)
-                                googleRouteBetweenPoints.update()
-                                googleRoute.update()
-                                googlePoint.update()
+                                routeBetweenPoints.update()
                             }
                         }
                         function append(newElement) {
-                            pointModel2.append({"position": QtPositioning.coordinate(newElement.lat, newElement.lon)})
-                            pointNumber = pointModel2.count - 1
-                            console.log(pointNumber)
+                            pointModel.append({"position": QtPositioning.coordinate(newElement.lat, newElement.lon)})
+                            pointNumber = pointModel.count - 1
                         }
                         signal distanceSignal(distance: int)
-                        Button{
-                            id: googleLastPoint
-                            anchors {
-                                right: parent.right
-                                top: parent.verticalCenter
-                                margins: 10
-                            }
+                        CenterButton{
                             iconSource: "./center.png"
-                            onClicked: {
-                                if(pointModel2.count > 0){
-                                    map.center = pointModel2.get(pointNumber).position
-                                    map.zoomLevel = 18
-                                }
-                            }
                         }
-                        Slider{
-                            id: googleZoomSlider
-                            anchors {
-                                left: parent.left
-                                leftMargin: 20
-                                topMargin: 50
-                                bottomMargin: 0
-                            }
+                        ZoomSlider {
                             height: parent.height - 50
-                            value: map.zoomLevel
-                            maximumValue: 22.0
-                            stepSize: 0.1
-                            minimumValue: 8.0
-                            orientation: Qt.Vertical
-                            onPressedChanged: {
-                                map.zoomLevel = googleZoomSlider.value
-                            }
                         }
                     }
                 }

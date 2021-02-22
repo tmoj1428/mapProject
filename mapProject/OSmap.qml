@@ -53,44 +53,14 @@ Item{
                             plugin: Plugin { name: "osm" }
                             query: RouteQuery {id: routeQuery }
                         }
-                        MapItemView {
+                        PointerModel{
                             model: markerModel
-                            id: point
-                            delegate: Component {
-                                MapQuickItem {
-                                    coordinate: model.position
-                                    sourceItem: Image {
-                                        width: 50
-                                        height: 50
-                                        source: "./marker2.png"
-                                    }
-                                }
-                            }
                         }
-                        MapItemView {
+                        MarkerModel{
                             model: pointModel
-                            id: pointer
-                            delegate: Component {
-                                MapQuickItem {
-                                    coordinate: model.position
-                                    sourceItem: Image {
-                                        width: 50
-                                        height: 50
-                                        source: "./marker2.png"
-                                    }
-                                }
-                             }
                         }
-                        MapItemView {
+                        RoutingModel{
                             model: routeBetweenPoints
-                            id: route
-                            delegate: Component {
-                                MapRoute {
-                                    route: routeData
-                                    line.color: "red"
-                                    line.width: 10
-                                }
-                            }
                         }
 
                         MouseArea {
@@ -101,10 +71,7 @@ Item{
                                     point1 = coordinate
                                     markerModel.append({"position": coordinate})
                                     routeQuery.addWaypoint(point1)
-                                    //routeQuery.addWaypoint(point2)
                                     routeBetweenPoints.update()
-                                    route.update()
-                                    point.update()
                                     if(markerModel.count == 2){
                                         distance = markerModel.get(0).position.distanceTo(markerModel.get(1).position)
                                         map_id.distanceSignal(distance)
@@ -119,49 +86,19 @@ Item{
                                 point1 = coordinate
                                 routeQuery.addWaypoint(point1)
                                 routeBetweenPoints.update()
-                                route.update()
-                                point.update()
                             }
                         }
 
                         function append(newElement) {
                             pointModel.append({"position": QtPositioning.coordinate(newElement.lat, newElement.lon)})
                             pointNumber = pointModel.count - 1
-                            console.log(pointNumber)
                         }
                         signal distanceSignal(distance: int)
-                        Button{
-                            id: lastPoint
-                            anchors {
-                                right: parent.right
-                                top: parent.verticalCenter
-                                margins: 10
-                            }
+                        CenterButton{
                             iconSource: "./center.png"
-                            onClicked: {
-                                if(pointModel.count > 0){
-                                    map_id.center = pointModel.get(pointNumber).position
-                                    map_id.zoomLevel = 18
-                                }
-                            }
                         }
-                        Slider{
-                            id: zoomSlider
-                            anchors {
-                                left: parent.left
-                                leftMargin: 20
-                                topMargin: 50
-                                bottomMargin: 0
-                            }
+                        ZoomSlider {
                             height: parent.height - 50
-                            value: map_id.zoomLevel
-                            maximumValue: 22.0
-                            stepSize: 0.1
-                            minimumValue: 8.0
-                            orientation: Qt.Vertical
-                            onPressedChanged: {
-                                map_id.zoomLevel = zoomSlider.value
-                            }
                         }
                     }
                 }

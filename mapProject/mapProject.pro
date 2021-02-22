@@ -27,5 +27,10 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
+    CenterButton.qml \
+    MarkerModel.qml \
     OSmap.qml \
+    PointerModel.qml \
+    RoutingModel.qml \
+    ZoomSlider.qml \
     googleMap.qml

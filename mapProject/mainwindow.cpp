@@ -27,7 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
     }else{
         view->setSource(QUrl("../mapProject/googleMap.qml"));
         object = view->rootObject();
-        map = object->findChild<QObject*>("googleMap");
+        map = object->findChild<QObject*>("map");
     }
     QObject::connect(map, SIGNAL(distanceSignal(int)), this, SLOT(distanceMsgBox(int)));
     ui->gridLayout->addWidget(container);
